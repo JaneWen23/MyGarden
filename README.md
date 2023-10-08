@@ -19,6 +19,26 @@ Let's begin with the git commands as the very starting point of building my gard
 
 
     In the second way:
+    
+    you still need to create a repo at remote end (github). once you created it, github shows the URL of the repo.
+    this case is suitable for the situation that you have a lot of things in local; and you have git for the local repo.
+    then you can "link" the remote repo to the local repo by this command:
+
+    git remote add origin git@github.com:JaneWen23/REPONAME.git
+
+    the "origin" is just a nickname of the URL "git@github.com:USERNAME/REPONAME.git"; 
+
+    if you set to a wrong URL, update it by:
+
+    git remote set-url origin git@github.com:JaneWen23/REPONAME.git
+
+    you can check whether changed successfully by:
+
+    git remote -v
+
+    if it is correct, then you can just push the local files to the remote repo as usual.
+
+ 
 
 frequently used commands:
 
@@ -41,6 +61,10 @@ git stash
 git checkout <filename>
 
 git checkout -b
+
+git rebase
+
+git merge
 
 
  
