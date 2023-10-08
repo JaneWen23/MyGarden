@@ -13,4 +13,7 @@ In the first way:
 Creating the repo is simple, no discussion needed. Then Clone it to any local address you like (the code is always provided by Github). 
 (The directory you save the cloned repo usually should not have ".git"; the cloned repo itself has git, so, usually you don't want another git outside the repo.)
 Then you can add, commit and push from local to remote.
+
+if your local branch is called "main", the command to push is:
+git push origin -u main
  
