@@ -2,7 +2,12 @@
 
 ## This is my secrete garden. 
 
+
 Let's begin with the git commands as the very starting point of building my garden!
+
+ref:
+
+https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
 1. Create a repo and "link" the local to the remote:
 
@@ -60,7 +65,7 @@ Let's begin with the git commands as the very starting point of building my gard
 
     Now, you need to understand what is a local repo. sometimes what it means is not what you think it means. 
 
-    there are 4 areas at your local file system, namely, stash (aka 存档库), workspace (aka working tree, 工作区), index (aka staging area, 暂存区索引), and local repo (aka 本地版本库).
+    there are 4 areas at your local file system, namely, stash (aka 存档库), workspace (aka worktree, 工作区, or aka checkout), index (aka staging area, 暂存区索引), and local repo (aka 本地版本库).
 
     The local repo is the directory named ".git".
 
