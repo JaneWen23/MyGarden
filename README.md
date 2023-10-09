@@ -47,19 +47,33 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
  
     以下是 git remote 命令的常见用法：
 
-        git remote：列出当前仓库中已配置的远程仓库。
+        git remote
+    
+    列出当前仓库中已配置的远程仓库。
 
-        git remote -v：列出当前仓库中已配置的远程仓库，并显示它们的 URL。
+        git remote -v
+    
+    列出当前仓库中已配置的远程仓库，并显示它们的 URL。
 
-        git remote add <remote_name> <remote_url>：添加一个新的远程仓库。指定一个远程仓库的名称和 URL，将其添加到当前仓库中。
+        git remote add <remote_name> <remote_url>
+    
+    添加一个新的远程仓库。指定一个远程仓库的名称和 URL，将其添加到当前仓库中。
 
-        git remote rename <old_name> <new_name>：将已配置的远程仓库重命名。
+        git remote rename <old_name> <new_name>
+    
+    将已配置的远程仓库重命名。
 
-        git remote remove <remote_name>：从当前仓库中删除指定的远程仓库。
+        git remote remove <remote_name>
+    
+    从当前仓库中删除指定的远程仓库。
 
-        git remote set-url <remote_name> <new_url>：修改指定远程仓库的 URL。
+        git remote set-url <remote_name> <new_url>
+        
+    修改指定远程仓库的 URL。
 
-        git remote show <remote_name>：显示指定远程仓库的详细信息，包括 URL 和跟踪分支。
+        git remote show <remote_name>
+    
+    显示指定远程仓库的详细信息，包括 URL 和跟踪分支。
 
 2. Operations between remote repo and local repo:
 
@@ -91,13 +105,23 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
     update the server (remote) with your commits (in local repo). here may exist a problem that there are many branches in the local repo and you need to specify which to push.
 
-    for example,
+    for example, push main branch to origin:
 
         git push origin -u main
-
-    What does the "-u" mean? why sometimes it works without the "-u"?
     
-    The key is "argument-less git-pull". When you do a git pull from a branch, without specifying a source remote or branch, git looks at the branch.<name>.merge setting to know where to pull from. git push -u sets this information for the branch you're pushing.
+    or another example, push another branch to origin:
+
+        git push origin another_branch
+
+    What does the "-u" mean: It means to set up the upstream repo.
+    
+    why sometimes it works without the "-u":
+    
+    The key is "argument-less git-pull". When you do a git pull from a branch, without specifying a source remote or branch, git looks at the "branch.name.merge" setting to know where to pull from. git push -u sets this information for the branch you're pushing.
+
+    you just need to specify the upstream once for your branch. after that, you can omit the "-u" and git will know what you really mean.
+
+    [following is copied from internet:]
 
     To see the difference, let's use a new empty branch:
 
@@ -137,11 +161,51 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
         Already up-to-date.
     Note that tracking information has been set up so that git pull works as expected without specifying the remote or branch.
 
-    Update: 
-
-    in addition to git pull this setting also affects default behavior of git push. If you get in the habit of using -u to capture the remote branch you intend to track, I recommend setting your push.default config value to upstream.
+    in addition to git pull, this setting also affects default behavior of git push. If you get in the habit of using -u to capture the remote branch you intend to track, I recommend setting your push.default config value to upstream.
     
-    git push -u <remote> HEAD will push the current branch to a branch of the same name on <remote> (and also set up tracking so you can do git push after that).
+    git push -u REMOTE_REPO_NAME HEAD will push the current branch to a branch of the same name on REMOTE_REPO_NAME (and also set up tracking so you can do git push after that).
+
+    2.3. branch
+
+    you can list the remote branches by
+    
+        git branch -r
+
+    ? what does it mean by origin/HEAD? why is it different from origin/min?
+
+    you can list the local branches by
+
+        git branch
+
+    you can delete a remote branch by
+
+        git push origin --delete BRANCH_NAME
+
+    or you can delete a remote branch on Github.
+    
+    note that your local branch will not be deleted!
+
+    you can delete a local branch by
+
+        git branch -d BRANCH_NAME
+
+    2.4 soft reset
+
+3. operations between local repo and workspace
+
+    recall the four areas, think about how the local repo and workspace are located from each other. remenber that there is "index" also related closely with both local repo and workspace.
+
+    however, when the "data flow" is from remote and finally to your workspace, you may observe that the local repo does a lot of things directly to workspace, not to index. while, if you want to finally push your local stuff to remote repo, you always add to index when finished editing in workspace, and then commit to local repo, i.e., for this data flow direction, workspace usually does not directly contact the local repo.
+
+    3.1. hard reset
+
+    3.2. branch
+
+    create a new branch and switch to it:
+
+        git checkout -b NEW_BRANCH_NAME
+
+    
 
 
 
