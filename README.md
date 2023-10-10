@@ -250,13 +250,17 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
      Reverts all commits since the current branch diverged from UPSTREAM_BRANCH, and then re-applies them one-by-one on top of changes from the HEAD of UPSTREAM_BRANCH.
 
-    for more info, reffer to: https://git-scm.com/docs/git-rebase
+    for more info, refer to: https://git-scm.com/docs/git-rebase
 
     3.5. cherry-pick
 
         git cherry-pick COMMIT
     
-    Integrate changes in the given commit into the current branch.
+    Integrate changes in the given COMMIT (from another branch) into the current branch. (you should first use "git log" to find out the commit id on "another branch".)
+
+    note that this will also create a commit (the commit you cherry-picked becomes a new commit to your current branch).
+
+    for more information, refer to: https://blog.csdn.net/a1056244734/article/details/112908080
 
 
 
