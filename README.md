@@ -191,6 +191,11 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
     2.4 soft reset
 
+        git reset --soft HEAD^
+    
+    it means to undo the last commit, leaving its changes in the workspace, uncommitted. Does not touch the index file or the working tree at all. The only change it makes is to the head of the local repository. (and "^" means to be backward by "1 step"; "^^" means backward by two steps)
+
+
 3. operations between local repo and workspace
 
     recall the four areas, think about how the local repo and workspace are located from each other. remenber that there is "index" also related closely with both local repo and workspace.
@@ -198,6 +203,10 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
     however, when the "data flow" is from remote and finally to your workspace, you may observe that the local repo does a lot of things directly to workspace, not to index. while, if you want to finally push your local stuff to remote repo, you always add to index when finished editing in workspace, and then commit to local repo, i.e., for this data flow direction, workspace usually does not directly contact the local repo.
 
     3.1. hard reset
+
+        git reset --hard remote/branch
+
+    Reset local repo and working tree to match a remote-tracking branch. Use reset ‑‑hard origin/main to throw away all commits to the local main branch. Use this to start over on a failed merge.
 
     3.2. branch
 
@@ -226,9 +235,7 @@ git commit --amend
 
 git stash
 
-git checkout <filename>
-
-git checkout -b
+git checkout filename
 
 git rebase
 
