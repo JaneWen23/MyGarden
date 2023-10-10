@@ -1,0 +1,1 @@
+Cherry-pick means to pick an existed commit from another branch to the current branch.
