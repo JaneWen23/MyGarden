@@ -204,7 +204,7 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
     3.1. hard reset
 
-        git reset --hard remote/branch
+        git reset --hard REMOTE_NAME/BRANCH_NAME
 
     Reset local repo and working tree to match a remote-tracking branch. Use reset ‑‑hard origin/main to throw away all commits to the local main branch. Use this to start over on a failed merge.
 
@@ -214,7 +214,49 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
         git checkout -b NEW_BRANCH_NAME
 
+    switch to an existing branch:
+
+        git checkout BRANCH_NAME
+
+    or equivalently:
+
+        git switch BRANCH_NAME
+
+    if you have something not commited on the current branch, git won't let you to switch to another branch. Only if you have committed it, you are allowed to switch branch. and this may help you to understand that the branch operations are taken place in local repo (and results in your workspace change).
+
+    3.3. merge
+
+    merge current branch with another branch by:
+
+        git merge ANOTHER_BRANCH
+
+    this command will merge and commit. if you do not want to commit, use this command:
+
+        git merge ANOTHER_BRANCH --no-commit
+
+    as a result, it is "added" but no commited yet, i.e., the index is added to the staging (index) area.
+
+    NOTE: the thing following "git merge" can also be a commit (i.e. not limited to branch).
+
+    dealing with merge conflict:
     
+    *TO DO*
+
+    https://www.runoob.com/git/git-branch.html
+
+    3.4. rebase
+
+        git rebase UPSTREAM_BRANCH
+
+     Reverts all commits since the current branch diverged from UPSTREAM_BRANCH, and then re-applies them one-by-one on top of changes from the HEAD of UPSTREAM_BRANCH.
+
+    for more info, reffer to: https://git-scm.com/docs/git-rebase
+
+    3.5. cherry-pick
+
+        git cherry-pick COMMIT
+    
+    Integrate changes in the given commit into the current branch.
 
 
 
@@ -237,9 +279,10 @@ git stash
 
 git checkout filename
 
-git rebase
+git log
 
-git merge
+git restore
 
+git tag
 
  
