@@ -293,6 +293,8 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
     I don't want to show the command for this reset because I wanto to avoid the confusion. this kind of reset can be done via "add -i" followed by choosing "3: revert" option.
 
+    *TO DO*: how to restore a file that you removed (dr deleted) by accident?
+
     4.2. status
 
         git status
@@ -311,6 +313,8 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
     
     this is to abandon the modifications in your workspace and replace the file or directory with the version you committed last time.
 
+    and this operation is from index to workspace. how to understand it? if you added a file into index,
+
     NOTE: the command "checkout" is used in two ways, one is to create and (or) switch branch, note that this makes a difference in your worspace; the other is to replace your files in the workspace.
 
     4.4. 
@@ -324,6 +328,8 @@ git add
 
 git commit -s -m
 
+*TO DO*: how to push to two branches?
+
 git commit --amend
 
 git log --oneline --graph 以較清楚易讀的格式顯示簽入歷程
@@ -331,10 +337,6 @@ git log --oneline --graph 以較清楚易讀的格式顯示簽入歷程
 git stash
 
 git checkout filename
-
-git log
-
-git restore
 
 git tag
 
