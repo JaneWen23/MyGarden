@@ -171,7 +171,7 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
     
         git branch -r
 
-    ? what does it mean by origin/HEAD? why is it different from origin/min?
+    ? what does it mean by origin/HEAD? why is it different from origin/main?
 
     you can list the local branches by
 
@@ -260,9 +260,22 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
     note that this will also create a commit (the commit you cherry-picked becomes a new commit to your current branch).
 
-    
-
     for more information, refer to: https://blog.csdn.net/a1056244734/article/details/112908080
+
+    何时使用merge, 何时使用cherry-pick: 前者是整个分支上所有的修改都合并过来, 后者是单个的commit.
+
+    cherry-pick 与 merge一起用, 会有副作用:
+
+    Cherry Pick 之後再 Merge 會產生重複的 Commit;
+
+    透過 Cherry Pick 建立的 Commit 將難以追溯完整修改歷程;
+    
+    所以, 如果可以 Merge，就別用 Cherry Pick;
+
+    refer to:
+    
+    https://blog.darkthread.net/blog/git-cherry-pick-cons/
+
 
     3.6. revert a commit
 
@@ -270,9 +283,31 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
     Reverse commit specified by COMMIT and commit the result. i.e., withdraw a commit and commit on the withdrawal. But the name "revert" is better than withdraw, because it is technically the reverse of the target commit. and, if you revert twice, you will get the same as "no revert taken", which is better described by "revert".
     
-    NOTE: This requires your working tree to be clean (no modifications from the HEAD commit).
+    NOTE: This changes your workspace (you withdrew the commit, then the workspace restores to the stage when you last commited), so it requires your working tree to be clean (no modifications from the HEAD commit).
 
+4. operations from index to local repo and to workspace
 
+    4.1 reset an index (of a file)
+
+    this is different from the soft reset and hard reset. this is just to undo the "add" operation, i.e., the file in workspace is still there, but instead, not marked for commit.
+
+    I don't want to show the command for this reset because I wanto to avoid the confusion. this kind of reset can be done via "add -i" followed by choosing "3: revert" option.
+
+    4.2. status
+
+        git status
+    
+   Displays: 
+
+    paths that have differences between the index file and the current HEAD commit, 
+
+    paths that have differences between the workspace and the index file, and 
+
+    paths in the workspace that are not tracked by git.
+
+    4.3. checkout
+
+    
 
 
 
@@ -280,8 +315,6 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 frequently used commands:
 
 git add
-
-git add -i
 
 git commit -s -m
 
