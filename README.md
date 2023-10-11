@@ -224,7 +224,7 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
     if you have something not commited on the current branch, git won't let you to switch to another branch. Only if you have committed it, you are allowed to switch branch. and this may help you to understand that the branch operations are taken place in local repo (and results in your workspace change).
 
-    3.3. merge
+    3.3. merge branches or commits
 
     merge current branch with another branch by:
 
@@ -244,7 +244,7 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
     https://www.runoob.com/git/git-branch.html
 
-    3.4. rebase
+    3.4. rebase (???)
 
         git rebase UPSTREAM_BRANCH
 
@@ -252,7 +252,7 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
     for more info, refer to: https://git-scm.com/docs/git-rebase
 
-    3.5. cherry-pick
+    3.5. cherry-pick a commit
 
         git cherry-pick COMMIT
     
@@ -260,13 +260,15 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
     note that this will also create a commit (the commit you cherry-picked becomes a new commit to your current branch).
 
+    
+
     for more information, refer to: https://blog.csdn.net/a1056244734/article/details/112908080
 
     3.6. revert a commit
 
         git revert COMMIT
 
-    Reverse commit specified by COMMIT and commit the result. i.e., withdraw a commit and commit on the withdrawal. 
+    Reverse commit specified by COMMIT and commit the result. i.e., withdraw a commit and commit on the withdrawal. But the name "revert" is better than withdraw, because it is technically the reverse of the target commit. and, if you revert twice, you will get the same as "no revert taken", which is better described by "revert".
     
     NOTE: This requires your working tree to be clean (no modifications from the HEAD commit).
 
@@ -285,7 +287,7 @@ git commit -s -m
 
 git commit --amend
 
-
+git log --oneline --graph 以較清楚易讀的格式顯示簽入歷程
 
 git stash
 
@@ -298,3 +300,14 @@ git restore
 git tag
 
  
+GitFlow 流程規範：
+
+Master 分支 - 穩定隨時可上線，多會加上版號
+
+Develop 分支 - 開發主線，Feature 由此分支出去，改好再合併進來
+
+Hotfix 分支 - 從 Master 分支出來，改完合併回 Master 及 Develop
+
+Release 分支 - Dev 成熟時分支到 Release 做上線前最後測試，測試沒問題合併至 Master 及 Develop
+
+Feature 分支 - 由 Dev 分支出來，寫完再併合 Dev
