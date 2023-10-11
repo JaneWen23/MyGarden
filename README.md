@@ -262,14 +262,6 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
     for more information, refer to: https://blog.csdn.net/a1056244734/article/details/112908080
 
-    3.6. revert a commit
-
-        git revert COMMIT
-
-    Reverse commit specified by COMMIT and commit the result. i.e., withdraw a commit and commit on the withdrawal. 
-    
-    NOTE: This requires your working tree to be clean (no modifications from the HEAD commit).
-
 
 
 
