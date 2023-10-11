@@ -256,7 +256,7 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
         git cherry-pick COMMIT
     
-    Integrate changes in the given COMMIT (from another branch) into the current branch. (you should first use "git log" to find out the commit id on "another branch".)
+    Integrate changes in the given COMMIT (from another branch) into the current branch. (you should first use "git log" to find out the commit id on "another branch".) (and you need to make sure your working tree is clean -- if you just added a file to the index, you need to commit it before you can cherry-pick.)
 
     note that this will also create a commit (the commit you cherry-picked becomes a new commit to your current branch).
 
@@ -305,9 +305,15 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
     paths in the workspace that are not tracked by git.
 
-    4.3. checkout
+    4.3. checkout file(s) or directory
 
+        git checkout FILE(S)_OR_DIR
     
+    this is to abandon the modifications in your workspace and replace the file or directory with the version you committed last time.
+
+    NOTE: the command "checkout" is used in two ways, one is to create and (or) switch branch, note that this makes a difference in your worspace; the other is to replace your files in the workspace.
+
+    4.4. 
 
 
 
