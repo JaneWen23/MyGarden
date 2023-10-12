@@ -311,9 +311,9 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
         git checkout FILE(S)_OR_DIR
     
-    this is to abandon the modifications in your workspace and replace the file or directory with the version you committed last time.
+    this is to abandon the modifications in your workspace and replace the file or directory with the version you added or committed last time.
 
-    and this operation is from index to workspace. how to understand it? if you added a file into index,
+    and this operation is from index to workspace. how to understand it? if you added a file into index, there is nothing to checkout, because your worktree is clean (worktree being clean meaning no untracked files and no modification in tracked files). if you modified a file which was added to the index earlier, when you checkout that file, git will replace it by the version you last added, not last commited.
 
     NOTE: the command "checkout" is used in two ways, one is to create and (or) switch branch, note that this makes a difference in your worspace; the other is to replace your files in the workspace.
 
