@@ -310,6 +310,8 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
     4.3. checkout file(s) or directory
 
         git checkout FILE(S)_OR_DIR
+
+        取回兩個版本之前的檔案 git checkout HEAD~2 FILE_NAME
     
     this is to abandon the modifications in your workspace and replace the file or directory with the version you added or committed last time.
 
@@ -321,7 +323,7 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
         
         git commit -s -m
 
-    the "-s" means to add a tailer showing who signed-off this commit.
+    the "-s" means to add a tailer showing who signed-off this commit in the end of your commit log message.
 
         git commit --amend
 
@@ -334,7 +336,17 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
     another solution is to use git worktree, ref: https://andrewlock.net/working-on-two-git-branches-at-once-with-git-worktree/#creating-a-working-tree-from-an-existing-branch
 
 
+5. operations from workspace to index
 
+    5.1. add
+
+    this should be very familiar to you; just remember to use "git add -i".
+
+    5.2. remove 
+
+        git rm FILE(S)
+
+    Remove a file from the workspace AND the index.
 
 
 
