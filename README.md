@@ -293,8 +293,6 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
     I don't want to show the command for this reset because I wanto to avoid the confusion. this kind of reset can be done via "add -i" followed by choosing "3: revert" option.
 
-    *TO DO*: how to restore a file that you removed (dr deleted) by accident?*************************
-
     4.2. status
 
         git status
@@ -338,6 +336,8 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
 5. operations from workspace to index
 
+    the operations are add, remove (rm), and move (mv). after the operation, your files are in "staged" status.
+
     5.1. add
 
     this should be very familiar to you; just remember to use "git add -i".
@@ -348,17 +348,44 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
     Remove a file from the workspace AND the index.
 
+    *case 1*: the file was commited before you want to remove. 
+
+    in this case, the file will be removed from the workspace and the index, so, you cannot find the file in the working directory, AND you cannot use "checkout" to put it back.
+
+    if you regret releting it, you should first use command
+
+        git restore --staged FILE_NAME
+
+    this is to restore it from staged to unstaged, i.e., put the deletion operation back to workspace. 
+
+    at this time, you still cannot see the file in the working directory, because what we "put back" is the "location" that the "deletion operation" is saved at (from index to workspace). now it is the same as you put the file into "trash can" from system UI. 
+
+    now you can use this command to really restore the file:
+
+        git restore FILE_NAME
+
+    because what "restore FILE_NAME" does is to discard changes in your working directory. 
+
+    The difference between "checkout a file" and "restore a file" (both are referred to the operation between index and workspace):
+
+    "checkout a file" only works for *contents* of existed files, not for deleted files, or a file you just added (maybe by accident). (for an existed file, it makes no difference using either checkout or restore to discard changes in your working directory.)
+
+    "restore a file" can restore the operations on the file, namely, create and delete (put into trash can). 
+    
+    (if you moved a file to another location using "git mv", this operation cannot be tracked by "restore a file", in fact, )
+
+
+
+
+
+
 
 
 frequently used commands:
 
-git add
-
 git log --oneline --graph 以較清楚易讀的格式顯示簽入歷程
 
 git stash
-
-git checkout filename
 
 git tag
 
