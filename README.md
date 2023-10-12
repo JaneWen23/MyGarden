@@ -293,7 +293,7 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
     I don't want to show the command for this reset because I wanto to avoid the confusion. this kind of reset can be done via "add -i" followed by choosing "3: revert" option.
 
-    *TO DO*: how to restore a file that you removed (dr deleted) by accident?
+    *TO DO*: how to restore a file that you removed (dr deleted) by accident?*************************
 
     4.2. status
 
@@ -317,7 +317,23 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
     NOTE: the command "checkout" is used in two ways, one is to create and (or) switch branch, note that this makes a difference in your worspace; the other is to replace your files in the workspace.
 
-    4.4. 
+    4.4. commit
+        
+        git commit -s -m
+
+    the "-s" means to add a tailer showing who signed-off this commit.
+
+        git commit --amend
+
+    this means to replace your last commit with this commit. the commit id will be different from the last commit, however, your last commit will no longger exist.
+
+    how to commit to two branches at once?
+    
+    you can switch branch and cherry-pick, or, 
+    
+    another solution is to use git worktree, ref: https://andrewlock.net/working-on-two-git-branches-at-once-with-git-worktree/#creating-a-working-tree-from-an-existing-branch
+
+
 
 
 
@@ -325,12 +341,6 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 frequently used commands:
 
 git add
-
-git commit -s -m
-
-*TO DO*: how to push to two branches?
-
-git commit --amend
 
 git log --oneline --graph 以較清楚易讀的格式顯示簽入歷程
 
