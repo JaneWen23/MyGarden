@@ -83,7 +83,7 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
     The local repo is the directory named ".git".
 
-    The satging area is a cache to store the things you added but not commited yet.
+    The satging area (index) is a cache to store the things you added but not commited yet.
 
     The worksapce is the file directory that has ".git" associated with it.
 
@@ -207,6 +207,14 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
         git reset --hard REMOTE_NAME/BRANCH_NAME
 
     Reset local repo and working tree to match a remote-tracking branch. Use reset ‑‑hard origin/main to throw away all commits to the local main branch. Use this to start over on a failed merge.
+
+    this will remove all the things that uncommitted (for example, the changes in workspace, and the things you added but not committed).
+
+    is there any going back from hard reset??
+
+    Yes, use "git reflog". (*TO DO*) =======================
+
+    (*TO DO*) by the way, what is the mixed reset?? =========
 
     3.2. branch
 
@@ -348,7 +356,7 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
     Remove a file from the workspace AND the index.
 
-    *case 1*: the file was commited before you want to remove. 
+    *case 1*: the file was commited before you want to remove: 
 
     in this case, the file will be removed from the workspace and the index, so, you cannot find the file in the working directory, AND you cannot use "checkout" to put it back.
 
@@ -370,34 +378,225 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
     "checkout a file" only works for *contents* of existed files, not for deleted files, or a file you just added (maybe by accident). (for an existed file, it makes no difference using either checkout or restore to discard changes in your working directory.)
 
-    "restore a file" can restore the operations on the file, namely, create and delete (put into trash can). 
+    "restore a file" can restore the operations on the file, namely, create (not added yet) and delete (put into trash can). 
+
+    *case 2*: the file is added by accident and not commited yet
+
+    in this case, when you type "git rm FILE_NAME", there will be an error prompt out, saying that the has changes in staged area, so you cannot do this.
+
+    if you type "git rm -f FILE_NAME" to force removal, then there is no going back.
+
+    (in this case, if you just want to not track the file, you can use "add -i" and choose "3: revert".)
+
+    *case 3*: a file or folder was in track but you don't want to track anymore, and you would like it kept in your local working directory:
+
+    in this case, the command should be:
+
+        git rm --cached FILE_NAME
+
+    if you want to untrack a folder, the command should be:
+
+        git rm --cached -r FOLDER_NAME
+
+    you can see that this only removes the "cached" (i.e. staged) records; and it again shows that "rm" is an operation towards the index.
     
-    (if you moved a file to another location using "git mv", this operation cannot be tracked by "restore a file", in fact, )
+    5.3. move
+
+    this is used when you want to change the file's location, or rename, while still track the file. if you just move the file using your system UI, you will see that git reats it as deleted and another file at somewhere untracked, which is stupid.
+
+    the command is:
+
+        git mv OLD_FILE NEW_FILE
+
+    (if you moved a file to another location using "git mv", this operation cannot be tracked by "restore --staged", maybe it's because restore can take care of add and remove, not move.)
+
+6. operations at worspace and stash
+
+    6.1. clean
+    
+    This operation is at the workspace only. it removes the files that have never been tracked before. (if a file was tracked but currently not tracked, it will not be removed.)
+    
+    usages: (copied from internet)
+
+        git clean -n
+
+    是一次clean的演习, 告诉你哪些文件会被删除. 它不会真的删除文件, 只是一个提醒.
+
+        git clean -f
+
+    删除当前目录下没有track过的文件(recursively, starting from the current directory). 它不会删除.gitignore里面指定的文件夹和文件, 不论这些文件是否被track过.
+
+        git clean -f PATH
+
+    删除指定路径下的没有被track过的文件.
+
+        git clean -xf
+
+    与 -f 的区别是会删除 .gitignore 指定的文件和文件夹.    
+
+        git clean -df
+
+    删除当前目录下没有被track过的文件和文件夹(不是recursively).
+
+    另外, git reset --hard 与 git clean -f 是一对好基友. 结合使用他们能让你的工作目录完全会退到最近一次commit的状态.
+
+    git clean 对于刚编译过的项目也非常有用. 如, 它能轻易删除掉编译后生成的 .o 和 .exe 等文件. 这在打包发布一个release的时候非常有用.
+
+    6.2. stash
+
+    including push, pop and apply. these are operations between workspace and stash.
+
+    *case 1*: you want to record the current state of the working directory and the index, but want to go back to a clean working directory:
+    
+    The command saves your local modifications away and reverts the working directory to match the HEAD commit:
+
+        git stash push -m "MESSAGE"
+
+    or, for quickly making a snapshot, you can omit both push and MESSAGE:
+
+        git stash
+
+    the "message" will be automatically filled. but it is *recommended* to add -m "MESSAGE" on your own.
+
+    默认情况下，git stash会缓存下列文件 (然后工作区被恢复到最新一次commit)：
+
+    添加到暂存区的修改（staged changes）
+
+    Git跟踪的但并未添加到暂存区的修改（unstaged changes）
+    
+    但不会缓存以下文件：
+
+    在工作目录中新的文件（untracked files）
+
+    被忽略的文件（ignored files）
+
+    And you can have a bunch of staches, use
+
+        git stash list
+
+    to view them.
+
+    *case 2*: you want to apply (one of) the stashes in the list to your workspace:
+
+    it is better to add currently edited to index before apply any stashed items.
+
+    use "git stash list" to find out which one you want to apply (identified by the "index number"). for example,
+
+        git stash apply 0
+    
+    this will apply the latest in the stash; (if there is conflict, git will auto-merge them, and after you are done with the conflict, you should add the file to the index.)
+
+    and this will not remove the stashed item after "apply". if you want to remove it, use:
+
+        git stash drop 0
+
+    or, there is a shortcut for applying then drop the *latest* stashed item:
+
+        git stash pop
+
+    but if there is a conflict, "pop" command will not drop the stashed item in case you will need it later.
+
+    *case 3*: you dropped a stash by mistake:
+
+    i.) if your terminal is still there and you can see the returned message when you dropped it, you should know the ID (a series of number and letter), which looks like
+
+        *[main][~/Occupational/Techniques/MyGarden]$ git stash drop 3  
+        Dropped refs/stash@{3} (fda98edfc2b078644abd734c0b4b5d9fb3433530)
+
+    the ID is fda98edfc2b078644abd734c0b4b5d9fb3433530. then you can still apply it by
+
+        git stash apply fda98edfc2b078644abd734c0b4b5d9fb3433530
+
+    NOTE: this applies the dropped stash to your workspace, but does not bring the stash back. the stash does not re-appear in the stash list.
+
+    ii.) if you do now know the ID, you can find the ID by
+
+        git fsck --unreachable
+
+    since you just dropped it, its ID may be the first (latest) one. copy the ID and see what exactly it is by this command:
+
+        git show fda98edfc2b078644abd734c0b4b5d9fb3433530
+
+    if it is the one you are looking for, just git stash apply it.
+
+    finally, you can drop ALL the stashes by
+
+        git stash clear
+
+7. tag
+
+    there are two kind of tags, one is lightweight, and the other is annotated.
+
+    *lightweight*: 
+
+    lightwight tag is usually used for a minor version. this is just a tag attached to the commmit info. nothing more.
+
+    to add a lightweight tag to your latest commit:
+
+        git add TAG_NAME
+
+    NOTE: the TAG_NAME should not contain any white spaces; and your tag should be *unique* among all tags.
+
+    to add a lightweight tag to an earlier commit:
+
+    use "git log" to find the target commit ID, then:
+
+        git add TAG_NAME COMMIT_ID
+
+    to push a tag (or tags) to remote repo (the command omitted "main"):
+
+        git push origin --tags
+
+    or
+
+        git push origin TAG_NAME
+
+    *annotated*:
+
+    annotated tag is usually used for a release. this tag is a "entire object" (???).
+
+    to add an annotated tag to the latest commit:
+
+        git tag -a TAG_NAME -m "additional message about the release"
+    
+    to add an annotated tag to a history commit:
+
+        git tag -a TAG_NAME -m "additional message about the release" COMMIT_ID
+
+    to delete a tag:
+
+        git tag -d TAG_NAME
+
+    to delete a tag at remote repo (the command omitted "main"):
+
+        git push origin --delete TAG_NAME
 
 
+8. Displaying information
 
+        git log --oneline --graph 以較清楚易讀的格式顯示簽入歷程
 
+        git log --oneline
 
+        git reflog
 
+        git tag
 
+        git show
 
-frequently used commands:
+        git fsck 
 
-git log --oneline --graph 以較清楚易讀的格式顯示簽入歷程
-
-git stash
-
-git tag
+9. ignore
 
  
-GitFlow 流程規範：
+10. GitFlow 流程規範：
 
-Master 分支 - 穩定隨時可上線，多會加上版號
+    Master 分支 - 穩定隨時可上線，多會加上版號
 
-Develop 分支 - 開發主線，Feature 由此分支出去，改好再合併進來
+    Develop 分支 - 開發主線，Feature 由此分支出去，改好再合併進來
 
-Hotfix 分支 - 從 Master 分支出來，改完合併回 Master 及 Develop
+    Hotfix 分支 - 從 Master 分支出來，改完合併回 Master 及 Develop
 
-Release 分支 - Dev 成熟時分支到 Release 做上線前最後測試，測試沒問題合併至 Master 及 Develop
+    Release 分支 - Dev 成熟時分支到 Release 做上線前最後測試，測試沒問題合併至 Master 及 Develop
 
-Feature 分支 - 由 Dev 分支出來，寫完再併合 Dev
+    Feature 分支 - 由 Dev 分支出來，寫完再併合 Dev
