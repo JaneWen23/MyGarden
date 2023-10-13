@@ -535,21 +535,13 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
         git add TAG_NAME
 
-    NOTE: the TAG_NAME should not contain any white spaces; and your tag should be *unique* among all tags.
+    NOTE: the TAG_NAME should not contain any white spaces; and your tag should be *unique* among all tags, no matter they are either lightweight or annotated.
 
     to add a lightweight tag to an earlier commit:
 
     use "git log" to find the target commit ID, then:
 
         git add TAG_NAME COMMIT_ID
-
-    to push a tag (or tags) to remote repo (the command omitted "main"):
-
-        git push origin --tags
-
-    or
-
-        git push origin TAG_NAME
 
     *annotated*:
 
@@ -563,9 +555,19 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
         git tag -a TAG_NAME -m "additional message about the release" COMMIT_ID
 
+    *applied to both:*
+
     to delete a tag:
 
         git tag -d TAG_NAME
+
+    to push a tag (or tags) to remote repo (the command omitted "main"):
+
+        git push origin --tags
+
+    or
+
+        git push origin TAG_NAME
 
     to delete a tag at remote repo (the command omitted "main"):
 
@@ -579,8 +581,6 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
         git log --oneline
 
         git reflog
-
-        git tag
 
         git show
 
