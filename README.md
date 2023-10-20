@@ -587,6 +587,43 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
         git fsck 
 
 9. ignore
+    if you want to ignore a folder or file in the repo, you can open a terminal at the root directory of the repo, then type:
+
+        touch .gitignore
+
+    then type
+
+        ls -a
+
+    to show all the items, you should see the .gitignore file there. 
+    
+    then use vim to edit the .gitignore file: if you want to ignore a file at the path ROOT/test/file.txt, you just type 
+
+        test/file.txt
+
+    if you want to ignore a folder at path ROOT/folder, just type
+    
+        folder/
+    
+    note the "/";
+
+    more: ignore items starting with "img":
+
+        img*
+
+    ignore the files with a specific extension name (let's say .md)
+
+        *.md
+
+    and don't forget to add the .gitignore file:
+
+        git add .gitignore
+
+    for more info, ref:
+
+    https://www.freecodecamp.org/news/gitignore-file-how-to-ignore-files-and-folders-in-git/
+
+
 
  
 10. GitFlow 流程規範：
