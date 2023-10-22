@@ -399,6 +399,10 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
         git rm --cached -r FOLDER_NAME
 
     you can see that this only removes the "cached" (i.e. staged) records; and it again shows that "rm" is an operation towards the index.
+
+    *case 4*: you moved your files using system UI or IDE UI before telling git:
+
+    in this case, git treats the new directories as untracked new direstories and the old paths as deleted. you have to "git add" the new and "git rm" the old.
     
     5.3. move
 
