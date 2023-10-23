@@ -1,11 +1,6 @@
-# MyGarden
+# Git Commands
 
-## This is my secrete garden. 
-
-
-Let's begin with the git commands as the very starting point of building my garden!
-
-ref:
+## ref:
 
 https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
