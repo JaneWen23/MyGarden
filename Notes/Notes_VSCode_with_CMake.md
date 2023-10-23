@@ -69,6 +69,10 @@
     ![](../suppliments/VSCode_CMake/figures/f4.5_breakpoint_debug.png)
 
 
+## 附上以上的工程:
+
+    link: suppliments/VSCode_CMake/test.zip
+
 ## ref
 
 https://zhuanlan.zhihu.com/p/144376188
