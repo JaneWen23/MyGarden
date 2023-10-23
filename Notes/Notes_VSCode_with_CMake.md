@@ -18,15 +18,15 @@
 
 1) 新建一个文件夹(比如 test), 然后用 code 打开:
 
-    ![](figures/VSCode_CMake/f0_test_dir.png)
+    ![](../suppliments/VSCode_CMake/figures/f0_test_dir.png)
 
 2) 在VSCode里, Test目录下, 新建两个文件: main.cpp 和 CMakeLists.txt:
 
-    ![](figures/VSCode_CMake/f1.1_new_files.png)
+    ![](../suppliments/VSCode_CMake/figures/f1.1_new_files.png)
 
     main.cpp 就写成helloworld就好; CMakeLists.txt 的内容如下:
 
-    ![](figures/VSCode_CMake/f1.2_file_contents.png)
+    ![](../suppliments/VSCode_CMake/figures/f1.2_file_contents.png)
 
     其中第5行设置了将来生成的可执行文件的位置, 是当前工程目录下的 build/bin, 虽然现在还没建 build 目录, 但是 CMake Tools 会自动建; 当然现在手动建了 build 文件夹也可以, 不会影响 CMake Tools 的工作.
 
@@ -34,27 +34,27 @@
 
     CMake Tools 会自动执行“配置”, 即, 执行 CMakeLists.txt 里的命令 (output), 如下图大的红框所示.
 
-    ![](figures/VSCode_CMake/f3.1_cmake_tools_cfg.png)
+    ![](../suppliments/VSCode_CMake/figures/f3.1_cmake_tools_cfg.png)
 
     如果没有自动执行, 可以按下图所示的按钮(第一个按钮), 手动执行.
 
-    ![](figures/VSCode_CMake/f3.3_outline_and_cfg_button.png)
+    ![](../suppliments/VSCode_CMake/figures/f3.3_outline_and_cfg_button.png)
 
     执行结果就是会出来 build 目录和里面的一堆文件:
 
-    ![](figures/VSCode_CMake/f3.2_the_build_dir.png)
+    ![](../suppliments/VSCode_CMake/figures/f3.2_the_build_dir.png)
 
 4) 找到“Run and Debug”, 新建一个 launch.json 文件:
 
-    ![](figures/VSCode_CMake/f4.1_the_dbg_panel.png)
+    ![](../suppliments/VSCode_CMake/figures/f4.1_the_dbg_panel.png)
 
     它会让你选择debugger, 根据自己的操作系统选择即可:  
 
-    ![](figures/VSCode_CMake/f4.2_select_debugger.png)
+    ![](../suppliments/VSCode_CMake/figures/f4.2_select_debugger.png)
 
     修改 launch.json 文件中的内容:
 
-    ![](figures/VSCode_CMake/f4.3_launch_json.png)
+    ![](../suppliments/VSCode_CMake/figures/f4.3_launch_json.png)
 
     “command:cmake.launchTargetPath” 这句话是说, 可执行文件的路径由cmake提供. 
 
@@ -62,11 +62,11 @@
     
     如图所示的这两个按钮都可以 build:
 
-    ![](figures/VSCode_CMake/f4.4_build.png)
+    ![](../suppliments/VSCode_CMake/figures/f4.4_build.png)
 
     build 成功就可以断点调试啦:
 
-    ![](figures/VSCode_CMake/f4.5_breakpoint_debug.png)
+    ![](../suppliments/VSCode_CMake/figures/f4.5_breakpoint_debug.png)
 
 
 ## ref
