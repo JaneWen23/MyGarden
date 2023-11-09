@@ -100,4 +100,47 @@
 
 7. “含有函数指针的 struct“ 的模板
 
-    并不是一开始就想声明一个“含有函数指针的 struct“ 的模板, 而是
+    并不是一开始就想声明一个“含有函数指针的 struct“ 的模板, 而是被一个需求倒逼出来的.
+
+    需求是这样的, 有 2 个入参和返回类型都带模板的模板函数, 它们的参列表形式都一样:
+
+        template<typename T>
+        T formula_v1(T a, T b){
+            return a + b;
+        }
+
+        template<typename T>
+        T formula_v2(T a, T b){
+            return a * b;
+        }
+
+    想在另外一个函数内, 从以上两个模板选择一个, 进行实例化.
+
+    这回不能直接 typedef 函数指针了, 因为它们都是板上钉钉的模板, 指针无法指向模板. 硬要 typedef 函数指针也很麻烦, 因为所有的 type 都要 typedef 一遍. 那么怎样才能 ”选到“ 一个模板函数呢? 这时候就 ”逼“ 出了 struct 的模板:
+
+        template <typename T>
+        struct Formulas_T{
+            T (*formula)(T, T);
+        };
+
+    注意这里没有typedef, 因为还没有type; struct 内部是函数指针, 是带 T 的.
+    
+    有了这个 struct 的模板, 在需要的地方定义一个 struct 实体, 这样, 里面的函数指针的 type 也就跟着定下来了. 定了 type, 就可以像上面的例子一样指定函数名了.
+
+        void test(){
+            // definition
+            Formulas_T<uint32_t> sMyFormula;
+            sMyFormula.formula = formula_v1;
+
+            // usage
+            uint32_t a = 23, b = 30;
+            sMyFormula.formula(a, b);
+        }
+    
+    这里 “sMyFormula.formula = formula_v1” 不用写成 “sMyFormula.formula = formula_v1<uint32_t>”, 当然如果写了也没错, 推荐不写.
+
+    这个方法的精髓就是用 struct 的模板包装了函数指针, 使得 struct 内的函数指针可以有不确定的 type, 使用的时候分 “两步走”, 先定 type, 再定函数名字.
+
+    不过缺点也是有的, 作用域嘛, 跟上一条讲的一样.
+
+8. 
