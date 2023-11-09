@@ -134,7 +134,7 @@
 
             // usage
             uint32_t a = 23, b = 30;
-            sMyFormula.formula(a, b);
+            uint32_t c = sMyFormula.formula(a, b);
         }
     
     这里 “sMyFormula.formula = formula_v1” 不用写成 “sMyFormula.formula = formula_v1<uint32_t>”, 当然如果写了也没错, 推荐不写.
@@ -143,4 +143,37 @@
 
     不过缺点也是有的, 作用域嘛, 跟上一条讲的一样.
 
-8. 
+8. 不确定 type 的函数指针作为模板函数的参数
+
+    其实不是真的把 “不确定 type 的函数指针” 作为参数传进来, 而是以 void* 形式传进来的, 不过, 既然已经是 void* 了, 说它是不确定 type 不过分吧.
+
+        template<typename T>
+        void perform_formula(void* fp){
+            Formulas_T<T> sMyFormula;
+            sMyFormula.formula = ??? // should get some info from fp
+        }
+
+    为什么要把它作为参数传进来, 是遇到了这样的情形: 在 perform_formula< T> 内, 需要选一个函数模板, 其实也就是要定下来两个东西, type 和函数名字: type 是随着 perform_formula< T> 的实例化就能自动定下来的, 但是函数名字自己确定不了, 要“外面”的 (就是那个 void* fp) 告诉我才行. 
+    
+    这并不是说, 函数名字是从外面传进来的, 因为毕竟只传进来了 void* (这是出于接口统一的考虑), 要想得到名字(也就是能用的函数入口地址), 还需要一点加工.
+    
+    补充一下, 这个要调用的函数连 type 带名字, 已经在外面定义好了, 只是需要在 perform_formula< T> 里面才调用:
+
+        int main(){
+            // definition
+            Formulas_T<uint32_t> sExternalFormula;
+            sExternalFormula.formula = formula_v2;
+            
+            //call
+            perform_formula<uint32_t>((void*)sExternalFormula.formula); 
+
+            return 0;
+        }
+        
+    对于 perform_formula< T> 来说, 传参的时候, type 被隐去了, 不过问题不大, type 是可知的, 把名字搞定就可以了. 可是它不能直接等于 fp, 类型不同, 不能直接用等号连接.
+
+    所以问题变成了: 如何把 void* fp 强制类型转换成我们需要的类型. 写代码的时候, T 还不确定, 就不能显式地写出类型. “隐式”的类型表示, 也就是要反推 sMyFormula.formula 的类型, 其实用 decltype 就好了:
+
+        sMyFormula.formula = (decltype(sMyFormula.formula))fp;
+
+    这样, 在 perform_formula< T> 函数内部, 就通过 decltype “选到” 了想要的模板函数.
