@@ -5,3 +5,5 @@
 [Git Commands](Notes/Notes_Git.md)
 
 [VSCode + CMake](Notes/Notes_VSCode_with_CMake.md)
+
+[C/C++ 碎碎念](Notes/Notes_C_Cpp.md)
