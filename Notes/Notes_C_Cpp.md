@@ -17,11 +17,29 @@
     貌似现在大部分情况不用 exception 了, 用 if 判断就好.
 
 
-2. 二级指针作为“跳板”, 用来帮助 free 函数外部的 memory:
+2. 二级指针作为“跳板”, 用来帮助 free "函数外部的 memory":
     
-    因为传递指针是把指针的地址复制到了形参, 一级指针的情况下, 如果 free 了形参, 不会影响到实参, 实参自己那份还在, 无解. 
+    首先 free 涉及到对地址的操作 (毕竟 free 之后, 该地址的空间访问权没了), 需要格外小心. 如果一个函数的入参是一个一级指针, 我们又只对这个指针做 dereference 的操作, 只关心它所指向的内容, 那就没有什么好在意, 对指针的内容的操作, 就跟直接对它指向的变量操作一样. 当涉及到指针的地址, 事情就不一样了.
     
-    如果是二级指针, 也就是形参指向的地址 (addr A) 不是要free的那个, 而 addr A 指向的那个地址才是要 free 的那个, 也就是通过 addr A 跳转了一下. 这样形参顺着 addr A 找到了真正想 free 的那个, 它是没有“副本”的, 因为它的地址与传进来的形参不一样.
+    传递指针是把实参的地址复制给了形参的内容, 一级指针的情况下, 如果想 free, 那么函数体内只能 free 了形参, 形参不能访问自己原来的地址了, 不会影响到实参, 实参自己的地址还能访问, 无解.
+    
+    结合下面的例子看, 如果是二级指针, 也就是形参指向的地址 (addr A) 不是要free的那个, 而 addr A 指向的那个地址 (addr B) 才是要 free 的那个, 也就是通过 addr A 跳转了一下. 这样形参顺着 addr A 找到了真正想 free 的那个, 直接在 addr B 上操作了, 不是操作形参自己的地址, 就达成了目的:
+
+        // define
+        void free_data(int** ptr_pData){
+            // i.e., ptr_pData = &pData = "addr A",
+            // *ptr_pData = *(&pData) = pData = "addr B", 
+            assert(ptr_pData != NULL);
+            free(*ptr_pData);
+            *ptr_pData = NULL;
+        }
+
+        int main(){
+            int* pData = (int*)malloc(100 * sizeof(int));
+            //call
+            free_data(&pData);
+            return 0;
+        }
    
 3. 函数参数为引用时, 必须在调用前初始化完成, 而且不能为NULL; 传指针是可以为NULL的.
    
@@ -180,4 +198,4 @@
 
         sMyFormula.formula = (decltype(sMyFormula.formula))fp;
 
-    这样, 在 perform_formula< T> 函数内部, 就通过 decltype “选到” 了想要的模板函数.
+    这样, 在 perform_formula< T> 函数内部, 就通过 decltype “重新选到” 了想要的模板函数.
