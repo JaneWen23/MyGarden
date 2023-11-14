@@ -78,9 +78,9 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
     The local repo is the directory named ".git".
 
-    The satging area (index) is a cache to store the things you added but not commited yet.
+    The staging area (index) is a cache to store the things you added but not committed yet.
 
-    The worksapce is the file directory that has ".git" associated with it.
+    The workspace is the file directory that has ".git" associated with it.
 
     The stash is a place to hide modifications while you work on something else.
 
@@ -94,7 +94,40 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
         git fetch origin
 
-    Note that "pull" is not operated at your local repo, the "destination" of "pull" is at your workspace. And "git pull" is a shorhand for "git fetch" followed by "git merge FETCH_HEAD".
+    Note that "pull" is not operated at your local repo, the "destination" of "pull" is at your workspace. And "git pull" is a shorthand for "git fetch" followed by "git merge FETCH_HEAD".
+
+    2.1.1. pull
+
+    one mre thing about git pull: if your local reo and remote repo are diverged, let's say origin/master has commit A--B--C and local/master has commit A--B--D, when you try git pull, it will stop and prompt an error:
+
+        hint: You have divergent branches and need to specify how to reconcile them.
+        hint: You can do so by running one of the following commands sometime before
+        hint: your next pull:
+        hint: 
+        hint:   git config pull.rebase false  # merge
+        hint:   git config pull.rebase true   # rebase
+        hint:   git config pull.ff only       # fast-forward only
+        hint: 
+        hint: You can replace "git config" with "git config --global" to set a default
+        hint: preference for all repositories. You can also pass --rebase, --no-rebase,
+        hint: or --ff-only on the command line to override the configured default per
+        hint: invocation.
+        fatal: Need to specify how to reconcile divergent branches.
+
+    git pull --rebase is roughly equivalent to
+
+        git fetch
+        git rebase origin/master
+    
+    i.e. your remote changes (C) will be applied before the local changes (D), resulting in the following tree
+    
+    A -- B -- C -- D
+
+    if I use git pull --ff-only ? -- It will fail.
+
+    and one more thing: make sure to stash or commit the unstaged changes before "git pull".
+
+
 
     2.2. push
 
@@ -193,7 +226,7 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
 3. operations between local repo and workspace
 
-    recall the four areas, think about how the local repo and workspace are located from each other. remenber that there is "index" also related closely with both local repo and workspace.
+    recall the four areas, think about how the local repo and workspace are located from each other. remember that there is "index" also related closely with both local repo and workspace.
 
     however, when the "data flow" is from remote and finally to your workspace, you may observe that the local repo does a lot of things directly to workspace, not to index. while, if you want to finally push your local stuff to remote repo, you always add to index when finished editing in workspace, and then commit to local repo, i.e., for this data flow direction, workspace usually does not directly contact the local repo.
 
@@ -225,7 +258,7 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
         git switch BRANCH_NAME
 
-    if you have something not commited on the current branch, git won't let you to switch to another branch. Only if you have committed it, you are allowed to switch branch. and this may help you to understand that the branch operations are taken place in local repo (and results in your workspace change).
+    if you have something not committed on the current branch, git won't let you to switch to another branch. Only if you have committed it, you are allowed to switch branch. and this may help you to understand that the branch operations are taken place in local repo (and results in your workspace change).
 
     3.3. merge branches or commits
 
@@ -237,7 +270,7 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
         git merge ANOTHER_BRANCH --no-commit
 
-    as a result, it is "added" but no commited yet, i.e., the index is added to the staging (index) area.
+    as a result, it is "added" but no committed yet, i.e., the index is added to the staging (index) area.
 
     NOTE: the thing following "git merge" can also be a commit (i.e. not limited to branch).
 
@@ -286,7 +319,7 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
     Reverse commit specified by COMMIT and commit the result. i.e., withdraw a commit and commit on the withdrawal. But the name "revert" is better than withdraw, because it is technically the reverse of the target commit. and, if you revert twice, you will get the same as "no revert taken", which is better described by "revert".
     
-    NOTE: This changes your workspace (you withdrew the commit, then the workspace restores to the stage when you last commited), so it requires your working tree to be clean (no modifications from the HEAD commit).
+    NOTE: This changes your workspace (you withdrew the commit, then the workspace restores to the stage when you last committed), so it requires your working tree to be clean (no modifications from the HEAD commit).
 
 4. operations from index to local repo and to workspace
 
@@ -294,7 +327,7 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
     this is different from the soft reset and hard reset. this is just to undo the "add" operation, i.e., the file in workspace is still there, but instead, not marked for commit.
 
-    I don't want to show the command for this reset because I wanto to avoid the confusion. this kind of reset can be done via "add -i" followed by choosing "3: revert" option.
+    I don't want to show the command for this reset because I want to avoid the confusion. this kind of reset can be done via "add -i" followed by choosing "3: revert" option.
 
     4.2. status
 
@@ -316,9 +349,9 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
     
     this is to abandon the modifications in your workspace and replace the file or directory with the version you added or committed last time.
 
-    and this operation is from index to workspace. how to understand it? if you added a file into index, there is nothing to checkout, because your worktree is clean (worktree being clean meaning no untracked files and no modification in tracked files). if you modified a file which was added to the index earlier, when you checkout that file, git will replace it by the version you last added, not last commited.
+    and this operation is from index to workspace. how to understand it? if you added a file into index, there is nothing to checkout, because your worktree is clean (worktree being clean meaning no untracked files and no modification in tracked files). if you modified a file which was added to the index earlier, when you checkout that file, git will replace it by the version you last added, not last committed.
 
-    NOTE: the command "checkout" is used in two ways, one is to create and (or) switch branch, note that this makes a difference in your worspace; the other is to replace your files in the workspace.
+    NOTE: the command "checkout" is used in two ways, one is to create and (or) switch branch, note that this makes a difference in your workspace; the other is to replace your files in the workspace.
 
     4.4. commit
         
@@ -328,7 +361,7 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
         git commit --amend
 
-    this means to replace your last commit with this commit. the commit id will be different from the last commit, however, your last commit will no longger exist.
+    this means to replace your last commit with this commit. the commit id will be different from the last commit, however, your last commit will no longer exist.
 
     how to commit to two branches at once?
     
@@ -351,11 +384,11 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
     Remove a file from the workspace AND the index.
 
-    *case 1*: the file was commited before you want to remove: 
+    *case 1*: the file was committed before you want to remove: 
 
     in this case, the file will be removed from the workspace and the index, so, you cannot find the file in the working directory, AND you cannot use "checkout" to put it back.
 
-    if you regret releting it, you should first use command
+    if you regret deleting it, you should first use command
 
         git restore --staged FILE_NAME
 
@@ -375,7 +408,7 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
     "restore a file" can restore the operations on the file, namely, create (not added yet) and delete (put into trash can). 
 
-    *case 2*: the file is added by accident and not commited yet
+    *case 2*: the file is added by accident and not committed yet
 
     in this case, when you type "git rm FILE_NAME", there will be an error prompt out, saying that the has changes in staged area, so you cannot do this.
 
@@ -397,7 +430,7 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
     *case 4*: you moved your files using system UI or IDE UI before telling git:
 
-    in this case, git treats the new directories as untracked new direstories and the old paths as deleted. you have to "git add" the new and "git rm" the old.
+    in this case, git treats the new directories as untracked new directories and the old paths as deleted. you have to "git add" the new and "git rm" the old.
     
     5.3. move
 
@@ -409,7 +442,7 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
     (if you moved a file to another location using "git mv", this operation cannot be tracked by "restore --staged", maybe it's because restore can take care of add and remove, not move.)
 
-6. operations at worspace and stash
+6. operations at workspace and stash
 
     6.1. clean
     
@@ -469,7 +502,7 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
     被忽略的文件（ignored files）
 
-    And you can have a bunch of staches, use
+    And you can have a bunch of stashes, use
 
         git stash list
 
@@ -528,7 +561,7 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
     *lightweight*: 
 
-    lightwight tag is usually used for a minor version. this is just a tag attached to the commmit info. nothing more.
+    lightweight tag is usually used for a minor version. this is just a tag attached to the commit info. nothing more.
 
     to add a lightweight tag to your latest commit:
 
