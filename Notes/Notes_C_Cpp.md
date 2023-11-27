@@ -41,7 +41,11 @@
             return 0;
         }
    
-3. 函数参数为引用时, 必须在调用前初始化完成, 而且不能为NULL; 传指针是可以为NULL的.
+3. 引用作为参数 vs 指针作为参数
+   
+   函数参数为引用时, 必须在调用前初始化完成, 而且不能为NULL; 传指针是可以为NULL的.
+   
+   如果一个已有的函数 (比如库函数) 的入参是引用, 但我们只有指针, 转化的方法是直接在入参处把指针 dereference.
    
 4. malloc 与 free 成对使用, new 与 delete 成对使用. 二者行为上的区别是, new 申请内存时, 还会调用对象的构造函数, malloc 只会申请内存, delete 释放内存之前, 会调用对象的析构函数, free 只会释放内存.
    
@@ -49,7 +53,7 @@
    
     函数指针是没法指向一个模板的, 因为 typedef 的时候, 模板还没有 type. 
 
-    但是有一种 “在夹缝里” 的情况, 就是一个模板函数的返回类型和所有入参*都不带模板*, 只有函数体内部 “凭空” 用了模板. 这还真是模板函数, 它的使用方式也会有点不一样.
+    但是有一种 “在夹缝里” 的情况, 就是一个模板函数的返回类型和所有入参**都不带模板**, 只有函数体内部 “凭空” 用了模板. 这还真是模板函数, 它的使用方式也会有点不一样.
 
         template<typename T>
         void my_func(int a, int b){
@@ -113,7 +117,7 @@
 
             // usage
             int a = 4;
-            sMySruct.f(a);
+            sMyStruct.f(a);
         }
 
     注意:
@@ -165,7 +169,11 @@
 
     不过缺点也是有的, 作用域嘛, 跟上一条讲的一样.
 
-8. 不确定 type 的函数指针作为模板函数的参数
+8.  函数的作用域 vs 函数指针(一个变量)的作用域
+
+    在 C/C++ 中, 函数默认是全局的 (只要它没在哪个函数内部被定义), 作用域是整个文件域, 在源文件里可随地使用. 而上述 “Formulas_T<uint32_t> sExternalFormula” 的作用域是局部的, 当超出 sExternalFormula 的作用域时, 只是不可以通过 “sExternalFormula.formula” 来找到 formula_v1<uint32_t> 了, 函数还是在的. 只要它的入口地址保存在指针中, 什么时候想用这个函数还是可以用的.  
+
+9.  不确定 type 的函数指针作为模板函数的参数
 
     其实不是真的把 “不确定 type 的函数指针” 作为参数传进来, 而是以 void* 形式传进来的, 不过, 既然已经是 void* 了, 说它是不确定 type 不过分吧.
 
@@ -199,3 +207,83 @@
         sMyFormula.formula = (decltype(sMyFormula.formula))fp;
 
     这样, 在 perform_formula< T> 函数内部, 就通过 decltype “重新选到” 了想要的模板函数.
+
+10. void* 指向任意的函数
+    
+    上面一条说, 那个要被调用函数是事先在 “外面” 定义好的, 然后又转为 void* 型, 作为参数传递. 既然要转为 void*, 我们其实不用把定义写得那么一板一眼(不用把类型写得那么完备), 直接定义一个 void* 也可以:
+
+        void* fp = formula_v2<uint32_t>;
+        // equivalent to:
+        // Formulas_T<uint32_t> sExternalFormula;
+        // sExternalFormula.formula = formula_v2;
+        // void* fp = (void*)sExternalFormula.formula;
+
+    反正对编译器来说, “formula_v2<uint32_t>” 就已经提供了名字和type, 就知道是哪一个函数了, 用 void* 指向它, 没毛病.
+
+    其实, 任意一个函数, 在**没有定义函数指针**的情况下, 都可以被 void* 指向. 这就是为什么当我们只需要一个 void* 的时候, 不需要写 “Formulas_T<uint32_t> sExternalFormula” 来实例化一个 “含有函数指针的 struct” 然后指向 “formula_v2<uint32_t>”.
+
+    这是不是意味着 “Formulas_T<uint32_t> sExternalFormula” 就一无是处了呢? 不是的. 当我们真正要调用 “formula_v1<uint32_t>” 的时候, 还是需要 type 的, void* 是不能让你的函数被调用的, 要强制类型转换才行.  
+
+11. 模板也要柯里化
+ 
+    <!-- 如果有两个 type 需要确定, 可以分两个函数确定, 不然他俩的排列组合要死人的 -->
+    假设有这样一个模板函数, 需要两个type, 并且入参不含type:
+
+        template<typename Tsrc, typename Tdst>
+        void func(int a, int b){
+            //...
+        }
+    
+    要想定义函数指针, 指向实例化的函数, 根据条件判断, 决定指针指向哪个实例.
+
+    指针好说, 因为入参和返回值都不带 type. 条件判断的时候, 如果把所有的 type 排列组合都列一遍, 是要死人的. 用柯里化的思想优雅地解决问题:
+
+        typedef void (*FP)(int, int);
+
+        template<typename T>
+        void perform_func(int a, int b){
+            FP f = NULL;
+            if (...){
+                f = func<T, uint8_t>
+                // uint8_t will be passed to "Tdst"
+            }
+            else if (...){
+                f = func<T, uint16_t>
+                // uint16_t will be passed to "Tdst"
+            }
+            else if (...){
+                f = func<T, uint32_t>
+                // uint32_t will be passed to "Tdst"
+            }
+
+            f(a, b);
+        }
+
+        typedef void (*FP_2)(int, int);
+
+        int main(){
+            int a = 32;
+            int b = 34;
+            FP_2 g = NULL;
+            if (...){
+                g = perform_func<uint8_t>; 
+                // uint8_t will be eventually passed to "Tsrc"
+            }
+            else if (){
+                g = perform_func<uint16_t>; 
+                // uint16_t will be eventually passed to "Tsrc"
+            }
+            else if (){
+                g = perform_func<uint32_t>;
+                // uint16_t will be eventually passed to "Tsrc"
+            }
+
+            g(a, b);
+        }
+
+    就是分两步选择, 第一步选择是在 main() 中, 先定下来其中一个 type, 第二步选择是在 perform_func() 中, 定下来另一个 type. 这样就避免了列出所有的排列组合.
+
+12. 模板要放在头文件, 如果想要被外部调用的话. (如果不想被外部调用, 就放在源文件)
+
+
+<!-- option + Z :触发软换行 -->
