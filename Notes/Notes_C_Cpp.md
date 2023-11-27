@@ -121,8 +121,8 @@
         }
 
     注意:
-    * 这里的函数指针虽然写法和 typedef 一样, 但是它*不是*一个 type, 只是一个 struct 里面的成员, 还是要依附于这个 struct 而存在的. 超过了这个 struct 的作用域, 这个函数指针“类型”也就不存在了 (在另外一个函数内, 若还想用到指向 my_func_v2 的指针, 那么, 还得搞个 MyStruct_t 的实体才行). 而 typedef 的函数指针如果写在当前的源文件, 那么在整个源文件都是有效的, 随时可以用. 
-    * 上面的代码只是 MyStruct_t 的成员声明为函数指针, 并没有额外 typedef 函数指针类型, “sMyStruct.f = my_func_v2” 也起到*类似*前一段代码的 “FP f = my_func<uint8_t>” 的效果了 (只是作用域不同), 也就是说, 一个函数想要被指针指到, 不一定要 typedef 正儿八经的函数指针类型. 
+    * 这里的函数指针虽然写法和 typedef 一样, 但是它**不是**一个 type, 只是一个 struct 里面的成员, 还是要依附于这个 struct 而存在的. 超过了这个 struct 的作用域, 这个函数指针也就不存在了 (在另外一个函数内, 若还想用到指向 my_func_v2 的指针, 那么, 还得搞个 MyStruct_t 的实体才行). 而 typedef 的函数指针如果写在当前的源文件, 那么在整个源文件都是有效的, 随时可以用. 
+    * 上面的代码只是 MyStruct_t 的成员声明为函数指针, 并没有在全局 typedef 函数指针类型, “sMyStruct.f = my_func_v2” 也起到**类似**前一段代码的 “FP f = my_func<uint8_t>” 的效果了 (只是作用域不同), 也就是说, 一个函数想要被指针指到, 不一定要 typedef 正儿八经的全局的函数指针类型. 
 
 7. “含有函数指针的 struct“ 的模板
 
@@ -171,7 +171,7 @@
 
 8.  函数的作用域 vs 函数指针(一个变量)的作用域
 
-    在 C/C++ 中, 函数默认是全局的 (只要它没在哪个函数内部被定义), 作用域是整个文件域, 在源文件里可随地使用. 而上述 “Formulas_T<uint32_t> sExternalFormula” 的作用域是局部的, 当超出 sExternalFormula 的作用域时, 只是不可以通过 “sExternalFormula.formula” 来找到 formula_v1<uint32_t> 了, 函数还是在的. 只要它的入口地址保存在指针中, 什么时候想用这个函数还是可以用的.  
+    在 C/C++ 中, 函数默认是全局的 (只要它没在哪个函数内部被定义), 作用域是整个文件域, 在源文件里可随地使用. 而上述 “Formulas_T<uint32_t> sMyFormula 的作用域是局部的, 当超出 sMyFormula 的作用域时, 只是不可以通过 sMyFormula.formula” 来找到 formula_v1<uint32_t> 了, 函数还是在的. 只要它的入口地址保存在指针中, 什么时候想用这个函数还是可以用的.  
 
 9.  不确定 type 的函数指针作为模板函数的参数
 
@@ -238,6 +238,7 @@
 
     指针好说, 因为入参和返回值都不带 type. 条件判断的时候, 如果把所有的 type 排列组合都列一遍, 是要死人的. 用柯里化的思想优雅地解决问题:
 
+        // (continued)
         typedef void (*FP)(int, int);
 
         template<typename T>
