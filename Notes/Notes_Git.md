@@ -434,11 +434,14 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
     
     5.3. move
 
-    this is used when you want to change the file's location, or rename, while still track the file. if you just move the file using your system UI, you will see that git reats it as deleted and another file at somewhere untracked, which is stupid.
+    this is used when you want to change the file's location, or rename, while still track the file. if you just move the file using your system UI, you will see that git treats it as deleted and another file at somewhere untracked, which is stupid.
+
+    the mv command also works for directories!
 
     the command is:
 
         git mv OLD_FILE NEW_FILE
+        git mv OLD_DIR NEW_DIR
 
     (if you moved a file to another location using "git mv", this operation cannot be tracked by "restore --staged", maybe it's because restore can take care of add and remove, not move.)
 
