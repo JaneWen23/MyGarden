@@ -3,8 +3,9 @@
 1. assert 与 exception 的区别: 
    
    assert 的原型是
-    
-        void assert(int expression)
+    ``` cpp
+    void assert(int expression)
+    ```
 
     如果 expression 为真, 那么不会触发任何东西, 程序继续运行; 如果为假, 那么它先向 stderr 打印一条出错信息, 再通过调用 abort 来终止程序的运行. 程序终止了, 不会处理你的错误.
 
@@ -25,21 +26,23 @@
     
     结合下面的例子看, 如果是二级指针, 也就是形参指向的地址 (addr A) 不是要free的那个, 而 addr A 指向的那个地址 (addr B) 才是要 free 的那个, 也就是通过 addr A 跳转了一下. 这样形参顺着 addr A 找到了真正想 free 的那个, 直接在 addr B 上操作了, 不是操作形参自己的地址, 就达成了目的:
 
-        // define
-        void free_data(int** ptr_pData){
-            // i.e., ptr_pData = &pData = "addr A",
-            // *ptr_pData = *(&pData) = pData = "addr B", 
-            assert(ptr_pData != NULL);
-            free(*ptr_pData);
-            *ptr_pData = NULL;
-        }
+    ``` cpp
+    // define
+    void free_data(int** ptr_pData){
+        // i.e., ptr_pData = &pData = "addr A",
+        // *ptr_pData = *(&pData) = pData = "addr B", 
+        assert(ptr_pData != NULL);
+        free(*ptr_pData);
+        *ptr_pData = NULL;
+    }
 
-        int main(){
-            int* pData = (int*)malloc(100 * sizeof(int));
-            //call
-            free_data(&pData);
-            return 0;
-        }
+    int main(){
+        int* pData = (int*)malloc(100 * sizeof(int));
+        //call
+        free_data(&pData);
+        return 0;
+    }
+    ```
    
 3. 引用作为参数 vs 指针作为参数
    
@@ -55,12 +58,14 @@
 
     但是有一种 “在夹缝里” 的情况, 就是一个模板函数的返回类型和所有入参**都不带模板**, 只有函数体内部 “凭空” 用了模板. 这还真是模板函数, 它的使用方式也会有点不一样.
 
-        template<typename T>
-        void my_func(int a, int b){
-            T* myPtr = (T*)malloc((a + b) * sizeof(T));
-            // do something ...
-            free(myPtr);
-        }
+    ```cpp
+    template<typename T>
+    void my_func(int a, int b){
+        T* myPtr = (T*)malloc((a + b) * sizeof(T));
+        // do something ...
+        free(myPtr);
+    }
+    ```
    
     这时候, 不能通过入参的类型自动推断要用哪个实例, 但是可以通过一些条件判断决定调用哪个 type 的实例.
 
@@ -69,56 +74,60 @@
     也正是因为这个“模板函数”的返回类型和入参都不带模板, 就可以理解为, 现在有一堆已经实例化的函数, 与普通函数无异, 它们的返回类型和入参的类型都一样. 这就可以用函数指针了.
 
     直接 typedef 函数指针:
-
-        typedef void (*FP)(int, int);
+    ```cpp
+    typedef void (*FP)(int, int);
+    ```
 
     调用的时候这样:
-
-        void test(){
-            FP f = NULL;
-            int a = 0, b = 0;
-            if (...){
-                f = my_func<uint8_t>;
-            }
-            else if (...){
-                f = my_func<uint16_t>;
-            }
-            else if (...){
-                f = my_func<uint32_t>;
-            }
-            else{
-                f = my_func<int>;
-            }
-
-            // do something to a and b...
-            f(a, b);
+    ``` cpp
+    void test(){
+        FP f = NULL;
+        int a = 0, b = 0;
+        if (...){
+            f = my_func<uint8_t>;
         }
+        else if (...){
+            f = my_func<uint16_t>;
+        }
+        else if (...){
+            f = my_func<uint32_t>;
+        }
+        else{
+            f = my_func<int>;
+        }
+
+        // do something to a and b...
+        f(a, b);
+    }
+    ```
 
 6. 函数指针作为 struct 的成员
 
     声明的写法与 typedef 函数指针很像, 其实只是不用写 typedef 这个词而已.
-
-        typedef struct{
-            int height;
-            int width;
-            void (*f)(int, int); // pointer to function as a member
-        } MyStruct_t;
+    ```cpp
+    typedef struct{
+        int height;
+        int width;
+        void (*f)(int, int); // pointer to function as a member
+    } MyStruct_t;
+    ```
 
     定义和使用的时候这样:
+    ```cpp
+    void my_func_v2(int a){
+        // do something...
+    }
 
-        void my_func_v2(int a){
-            // do something...
-        }
+    void test(){
+        // definition
+        MyStruct_t sMyStruct;
+        sMyStruct.f = my_func_v2; 
 
-        void test(){
-            // definition
-            MyStruct_t sMyStruct;
-            sMyStruct.f = my_func_v2; 
-
-            // usage
-            int a = 4;
-            sMyStruct.f(a);
-        }
+        // usage
+        int a = 4;
+        sMyStruct.f(a);
+    }
+    ```
 
     注意:
     * 这里的函数指针虽然写法和 typedef 一样, 但是它**不是**一个 type, 只是一个 struct 里面的成员, 还是要依附于这个 struct 而存在的. 超过了这个 struct 的作用域, 这个函数指针也就不存在了 (在另外一个函数内, 若还想用到指向 my_func_v2 的指针, 那么, 还得搞个 MyStruct_t 的实体才行). 而 typedef 的函数指针如果写在当前的源文件, 那么在整个源文件都是有效的, 随时可以用. 
@@ -129,39 +138,41 @@
     并不是一开始就想声明一个“含有函数指针的 struct“ 的模板, 而是被一个需求倒逼出来的.
 
     需求是这样的, 有 2 个入参和返回类型都带模板的模板函数, 它们的参列表形式都一样:
+    ```cpp
+    template<typename T>
+    T formula_v1(T a, T b){
+        return a + b;
+    }
 
-        template<typename T>
-        T formula_v1(T a, T b){
-            return a + b;
-        }
-
-        template<typename T>
-        T formula_v2(T a, T b){
-            return a * b;
-        }
-
+    template<typename T>
+    T formula_v2(T a, T b){
+        return a * b;
+    }
+    ```
     想在另外一个函数内, 从以上两个模板选择一个, 进行实例化.
 
     这回不能直接 typedef 函数指针了, 因为它们都是板上钉钉的模板, 指针无法指向模板. 硬要 typedef 函数指针也很麻烦, 因为所有的 type 都要 typedef 一遍. 那么怎样才能 ”选到“ 一个模板函数呢? 这时候就 ”逼“ 出了 struct 的模板:
-
-        template <typename T>
-        struct Formulas_T{
-            T (*formula)(T, T);
-        };
+    ```cpp
+    template <typename T>
+    struct Formulas_T{
+        T (*formula)(T, T);
+    };
+    ```
 
     注意这里没有typedef, 因为还没有type; struct 内部是函数指针, 是带 T 的.
     
     有了这个 struct 的模板, 在需要的地方定义一个 struct 实体, 这样, 里面的函数指针的 type 也就跟着定下来了. 定了 type, 就可以像上面的例子一样指定函数名了.
+    ```cpp
+    void test(){
+        // definition
+        Formulas_T<uint32_t> sMyFormula;
+        sMyFormula.formula = formula_v1;
 
-        void test(){
-            // definition
-            Formulas_T<uint32_t> sMyFormula;
-            sMyFormula.formula = formula_v1;
-
-            // usage
-            uint32_t a = 23, b = 30;
-            uint32_t c = sMyFormula.formula(a, b);
-        }
+        // usage
+        uint32_t a = 23, b = 30;
+        uint32_t c = sMyFormula.formula(a, b);
+    }
+    ```
     
     这里 “sMyFormula.formula = formula_v1” 不用写成 “sMyFormula.formula = formula_v1<uint32_t>”, 当然如果写了也没错, 推荐不写.
 
@@ -176,48 +187,50 @@
 9.  不确定 type 的函数指针作为模板函数的参数
 
     其实不是真的把 “不确定 type 的函数指针” 作为参数传进来, 而是以 void* 形式传进来的, 不过, 既然已经是 void* 了, 说它是不确定 type 不过分吧.
-
-        template<typename T>
-        void perform_formula(void* fp){
-            Formulas_T<T> sMyFormula;
-            sMyFormula.formula = ??? // should get some info from fp
-        }
+    ```cpp
+    template<typename T>
+    void perform_formula(void* fp){
+        Formulas_T<T> sMyFormula;
+        sMyFormula.formula = ??? // should get some info from fp
+    }
+    ```
 
     为什么要把它作为参数传进来, 是遇到了这样的情形: 在 perform_formula< T> 内, 需要选一个函数模板, 其实也就是要定下来两个东西, type 和函数名字: type 是随着 perform_formula< T> 的实例化就能自动定下来的, 但是函数名字自己确定不了, 要“外面”的 (就是那个 void* fp) 告诉我才行. 
     
     这并不是说, 函数名字是从外面传进来的, 因为毕竟只传进来了 void* (这是出于接口统一的考虑), 要想得到名字(也就是能用的函数入口地址), 还需要一点加工.
     
     补充一下, 这个要调用的函数连 type 带名字, 已经在外面定义好了, 只是需要在 perform_formula< T> 里面才调用:
-
-        int main(){
-            // definition
-            Formulas_T<uint32_t> sExternalFormula;
-            sExternalFormula.formula = formula_v2;
-            
-            //call
-            perform_formula<uint32_t>((void*)sExternalFormula.formula); 
-
-            return 0;
-        }
+    ```cpp
+    int main(){
+        // definition
+        Formulas_T<uint32_t> sExternalFormula;
+        sExternalFormula.formula = formula_v2;
         
-    对于 perform_formula< T> 来说, 传参的时候, type 被隐去了, 不过问题不大, type 是可知的, 把名字搞定就可以了. 可是它不能直接等于 fp, 类型不同, 不能直接用等号连接.
+        //call
+        perform_formula<uint32_t>((void*)sExternalFormula.formula); 
+
+        return 0;
+    }
+    ```
+    对于 ``perform_formula<T>`` 来说, 传参的时候, type 被隐去了, 不过问题不大, type 是可知的, 把名字搞定就可以了. 可是它不能直接等于 fp, 类型不同, 不能直接用等号连接.
 
     所以问题变成了: 如何把 void* fp 强制类型转换成我们需要的类型. 写代码的时候, T 还不确定, 就不能显式地写出类型. “隐式”的类型表示, 也就是要反推 sMyFormula.formula 的类型, 其实用 decltype 就好了:
-
-        sMyFormula.formula = (decltype(sMyFormula.formula))fp;
+    ```cpp
+    sMyFormula.formula = (decltype(sMyFormula.formula))fp;
+    ```
 
     这样, 在 perform_formula< T> 函数内部, 就通过 decltype “重新选到” 了想要的模板函数.
 
 10. void* 指向任意的函数
     
     上面一条说, 那个要被调用函数是事先在 “外面” 定义好的, 然后又转为 void* 型, 作为参数传递. 既然要转为 void*, 我们其实不用把定义写得那么一板一眼(不用把类型写得那么完备), 直接定义一个 void* 也可以:
-
-        void* fp = formula_v2<uint32_t>;
-        // equivalent to:
-        // Formulas_T<uint32_t> sExternalFormula;
-        // sExternalFormula.formula = formula_v2;
-        // void* fp = (void*)sExternalFormula.formula;
-
+    ```cpp
+    void* fp = formula_v2<uint32_t>;
+    // equivalent to:
+    // Formulas_T<uint32_t> sExternalFormula;
+    // sExternalFormula.formula = formula_v2;
+    // void* fp = (void*)sExternalFormula.formula;
+    ```
     反正对编译器来说, “formula_v2<uint32_t>” 就已经提供了名字和type, 就知道是哪一个函数了, 用 void* 指向它, 没毛病.
 
     其实, 任意一个函数, 在**没有定义函数指针**的情况下, 都可以被 void* 指向. 这就是为什么当我们只需要一个 void* 的时候, 不需要写 “Formulas_T<uint32_t> sExternalFormula” 来实例化一个 “含有函数指针的 struct” 然后指向 “formula_v2<uint32_t>”.
@@ -228,60 +241,60 @@
  
     <!-- 如果有两个 type 需要确定, 可以分两个函数确定, 不然他俩的排列组合要死人的 -->
     假设有这样一个模板函数, 需要两个type, 并且入参不含type:
-
-        template<typename Tsrc, typename Tdst>
-        void func(int a, int b){
-            //...
-        }
-    
+    ```cpp
+    template<typename Tsrc, typename Tdst>
+    void func(int a, int b){
+        //...
+    }
+    ```
     要想定义函数指针, 指向实例化的函数, 根据条件判断, 决定指针指向哪个实例.
 
     指针好说, 因为入参和返回值都不带 type. 条件判断的时候, 如果把所有的 type 排列组合都列一遍, 是要死人的. 用柯里化的思想优雅地解决问题:
+    ```cpp
+    // (continued)
+    typedef void (*FP)(int, int);
 
-        // (continued)
-        typedef void (*FP)(int, int);
-
-        template<typename T>
-        void perform_func(int a, int b){
-            FP f = NULL;
-            if (...){
-                f = func<T, uint8_t>
-                // uint8_t will be passed to "Tdst"
-            }
-            else if (...){
-                f = func<T, uint16_t>
-                // uint16_t will be passed to "Tdst"
-            }
-            else if (...){
-                f = func<T, uint32_t>
-                // uint32_t will be passed to "Tdst"
-            }
-
-            f(a, b);
+    template<typename T>
+    void perform_func(int a, int b){
+        FP f = NULL;
+        if (...){
+            f = func<T, uint8_t>
+            // uint8_t will be passed to "Tdst"
+        }
+        else if (...){
+            f = func<T, uint16_t>
+            // uint16_t will be passed to "Tdst"
+        }
+        else if (...){
+            f = func<T, uint32_t>
+            // uint32_t will be passed to "Tdst"
         }
 
-        typedef void (*FP_2)(int, int);
+        f(a, b);
+    }
 
-        int main(){
-            int a = 32;
-            int b = 34;
-            FP_2 g = NULL;
-            if (...){
-                g = perform_func<uint8_t>; 
-                // uint8_t will be eventually passed to "Tsrc"
-            }
-            else if (){
-                g = perform_func<uint16_t>; 
-                // uint16_t will be eventually passed to "Tsrc"
-            }
-            else if (){
-                g = perform_func<uint32_t>;
-                // uint16_t will be eventually passed to "Tsrc"
-            }
+    typedef void (*FP_2)(int, int);
 
-            g(a, b);
+    int main(){
+        int a = 32;
+        int b = 34;
+        FP_2 g = NULL;
+        if (...){
+            g = perform_func<uint8_t>; 
+            // uint8_t will be eventually passed to "Tsrc"
+        }
+        else if (){
+            g = perform_func<uint16_t>; 
+            // uint16_t will be eventually passed to "Tsrc"
+        }
+        else if (){
+            g = perform_func<uint32_t>;
+            // uint16_t will be eventually passed to "Tsrc"
         }
 
+        g(a, b);
+    }
+    ```
     就是分两步选择, 第一步选择是在 main() 中, 先定下来其中一个 type, 第二步选择是在 perform_func() 中, 定下来另一个 type. 这样就避免了列出所有的排列组合.
 
 12. 模板要放在头文件, 如果想要被外部调用的话. (如果不想被外部调用, 就放在源文件)
