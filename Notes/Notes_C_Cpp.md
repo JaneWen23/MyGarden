@@ -333,50 +333,65 @@
 
     不过还是尽量用 `std::string` 吧. 一定要 C style 的时候再转化为 `const char*`.
 
-14. std::vector
-    vector is FILO(First in last out)(stack)? can only push_back() and pop_back().
-    the last element v.back() is equal to *(v.end()-1), note: end() will get the pointer at last element position + 1.
+14. std::vector  
+    vector is FILO(First in last out)(like stack) can only push_back() and pop_back().  
+    the last element v.back() is equal to *(v.end()-1), note: end() will get the pointer at last element position + 1.  
 
     the last element in stack: s.top(), not back().
 
-    std::queue
-    std::queue q;
-    q.front() // no q[0]; is it iterator (pointer) or object????????
-    q.emplace(), or q.push()// no insert(), no push_back()
-    q.pop() // no pop_front()
-    循环队列: q.push(q.front()); q.pop();
+    std::queue  
+    std::queue q;  
+    q.front() // no q[0];  
+    q.emplace(), or q.push()// no insert(), no push_back()  
+    q.pop() // no pop_front()  
+    循环队列: q.push(q.front()); q.pop();  
 
-    what is an iterator:
+    what is an iterator:  
+    迭代器是用类实现的; 迭代器至少要支持两个操作: *it 访问当前元素, 和 ++it 前缀自增; 迭代器用来遍历容器内的元素.  
+    什么是容器, 简单来说就是一个可以“装”其它类型的数据的东西.
 
 15. std::unordered_map, std::pair, std::unordered_set, std::any
-    std::pair.first // no pair.first()
-    std::pair.second // no pair.second()
-    std::set    insert() 插入同样的键两次, 第二次会被忽略; count() 返回值只有0或1
+
+    哈希表就是用 std::unordered_map 类型, 里面每个元素是 std::pair 类型;  
+    std::pair.first // no pair.first()  
+    std::pair.second // no pair.second()  
+
+    std::unordered_set 就是哈希表只有key, 不带value;
+
+    std::set 是自动排好序、不允许元素重复的数据结构;   insert() 插入同样的键两次, 第二次会被忽略; count() 返回值只有0或1;  
     to traverse a set, you can only use `auto it = s.begin(); it != s.end(); ++it;` no s[0], no s.at()
     
 16. DAG 与 topological sort
+    
+    只要是DAG就可以拓扑排序, 拓扑排序有两种方法: 深度优先搜索和广度优先搜索.
+
 17. 类的构造函数显式调用(一种是vector(n), 一种是new[]什么的), 类的继承
-18. 同一个类的不同构造函数嵌套调用: 只按照正常的函数调用方式是不行的, 会出现内存泄漏问题, 要加上 ”new (this)“ 关键字. (为什么?)
+    
+    ...
+
+18. 同一个类的不同构造函数嵌套调用: 只按照正常的函数调用方式是不行的, 会出现内存泄漏问题. 最好还是把那个会被嵌套的构造函数写成一个一般的成员函数, 再用不同的构造函数调用它; 还是不要用 placement new 了, 这样会带来一些很 tricky 的问题比如: 在构造函数里面调用析构函数等等; 本来 placement new 也不是为了这个目的而设计的.
+
+
     `new` 的用法, 以及当 `new` 一个对象的时候, 发生了什么
     new 3种用法, 一个是 new operator, 一个是 operator new (是函数), 一个是 placement new;
     new 一个对象就是在堆区分配内存, 不用new的创建对象就是在栈上分配内存, 栈上能分配的内存比较小; 堆上创建的对象好像是匿名的, 栈上创建的有名字;
-    既然在堆区分配了, 就必须在用完的时候用 delete 删掉;
-    一般来说，使用new申请空间时，是从系统的“堆”（heap）中分配空间。申请所得的空间的位置是根据当时的内存的实际使用情况决定的。但是，在某些特殊情况下，可能需要在已分配的特定内存创建对象，这就是所谓的“定位放置new”（placement new）操作. (既可以放置在栈上也可以放置在堆上)
-    所谓placement new就是在用户指定的内存位置上构建新的对象，这个构建过程不需要额外分配内存，只需要调用对象的构造函数即可。(不分配内存, 只调用构造函数)
+    既然在堆区分配了, 就必须在用完的时候用 delete 删掉;  
+    一般来说，使用new申请空间时，是从系统的“堆”（heap）中分配空间。申请所得的空间的位置是根据当时的内存的实际使用情况决定的。但是，在某些特殊情况下，可能需要在已分配的特定内存创建对象，这就是所谓的“定位放置new”（placement new）操作. (既可以放置在栈上也可以放置在堆上)  
+    所谓placement new就是在用户指定的内存位置上构建新的对象，这个构建过程不需要额外分配内存，只需要调用对象的构造函数即可。(不分配内存, 只调用构造函数)  
     和其他普通的new不同的是，它在括号里多了另外一个参数。比如：
     ```cpp
     Widget * p = new Widget; //ordinary new
     pi = new (ptr) int; //placement new
     ```
 
-    一般的new, 比如  A* pa = new A;  实际上有三个过程: 
-    (1)调用operator new分配内存，operator new (sizeof(A)) 
-    (2)调用构造函数生成类对象，A::A() (初始化)
-    (3)返回相应指针 
-    事实上，分配内存这一操作就是由operator new(size_t)来完成的，如果类A重载了operator new，那么将调用A::operator new(size_t )，否则调用全局::operator new(size_t )，后者由C++默认提供.
-    placement new，本质上是对operator new的重载，定义于#include <new>中。它不分配内存，调用合适的构造函数在ptr所指的地方构造一个对象，之后返回实参指针ptr
+    一般的new, 比如  A* pa = new A;  实际上有三个过程:   
+    (1)调用operator new分配内存，operator new (sizeof(A))   
+    (2)调用构造函数生成类对象，A::A() (初始化)  
+    (3)返回相应指针   
+    事实上，分配内存这一操作就是由operator new(size_t)来完成的，如果类A重载了operator new，那么将调用A::operator new(size_t )，否则调用全局::operator new(size_t )，后者由C++默认提供.  
+    placement new，本质上是对operator new的重载，定义于#include <new>中。它不分配内存，调用合适的构造函数在ptr所指的地方构造一个对象，之后返回实参指针ptr  
 
-    分配空间不是构造函数被调用的时候分配的, 而是进入大括号的时候分配的, 构造函数只是初始化这一块空间.
+    分配空间不是构造函数被调用的时候分配的, 而是进入大括号的时候分配的, 构造函数只是初始化这一块空间.  
     
 
 19.  现在推荐在构造函数抛出异常（但千万不要在析构函数抛出异常）。构造函数抛出异常的话，申请的内存会自动被清掉，所以不用担心内存泄露。另外，C++ 要抛异常一定要配合使用 RAII，这一条同样也适用于构造函数抛异常。有了 RAII 就不怕泄露啦。主的好处就是用这个对象的时候不用担心是否初始化成功，只要是有这么一个对象，它就是可用的。
@@ -419,11 +434,11 @@
         // do something
    }
    ```
-   还有一种是
+   还有一种是 for each 语句, 与迭代器遍历是等价的, 这只是一个简便写法.
    ```cpp
-   std::vector<std::string>& emails;
-   for (auto &email : emails){
-        for (char c: email){
+   std::vector<std::string> emails;
+   for (auto email : emails){
+        for (char c : email){
             // do something
         }
    }
