@@ -135,11 +135,11 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
     for example, push main branch to origin:
 
-        git push origin -u main
+    ```git push origin -u main```
     
     or another example, push another branch to origin:
 
-        git push origin another_branch
+    ```git push origin another_branch```
 
     What does the "-u" mean: It means to set up the upstream repo.
     
@@ -153,10 +153,10 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
     To see the difference, let's use a new empty branch:
 
-        git checkout -b test
+    ```git checkout -b test```
 
     First, we push without -u:
-
+    ```
         git push origin test
         git pull
 
@@ -179,6 +179,7 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
         fetch = <refspec>
 
         See git-config(1) for details.
+    ```
     Now if we add -u:
 
         git push -u origin test
@@ -197,17 +198,17 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
     you can list the remote branches by
     
-        git branch -r
+    ```git branch -r```
 
     ? what does it mean by origin/HEAD? why is it different from origin/main?
 
     you can list the local branches by
 
-        git branch
+    ```git branch```
 
     you can delete a remote branch by
 
-        git push origin --delete BRANCH_NAME
+    ```git push origin --delete BRANCH_NAME```
 
     or you can delete a remote branch on Github.
     
@@ -215,11 +216,11 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
     you can delete a local branch by
 
-        git branch -d BRANCH_NAME
+    ```git branch -d BRANCH_NAME```
 
     2.4 soft reset
 
-        git reset --soft HEAD^
+    ```git reset --soft HEAD^```
     
     it means to undo the last commit, leaving its changes in the workspace, uncommitted. Does not touch the index file or the working tree at all. The only change it makes is to the head of the local repository. (and "^" means to be backward by "1 step"; "^^" means backward by two steps)
 
@@ -232,7 +233,7 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
     3.1. hard reset
 
-        git reset --hard REMOTE_NAME/BRANCH_NAME
+    ```git reset --hard REMOTE_NAME/BRANCH_NAME```
 
     Reset local repo and working tree to match a remote-tracking branch. Use reset ‑‑hard origin/main to throw away all commits to the local main branch. Use this to start over on a failed merge.
 
@@ -248,15 +249,15 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
     create a new branch and switch to it:
 
-        git checkout -b NEW_BRANCH_NAME
+    ```git checkout -b NEW_BRANCH_NAME```
 
     switch to an existing branch:
 
-        git checkout BRANCH_NAME
+    ```git checkout BRANCH_NAME```
 
     or equivalently:
 
-        git switch BRANCH_NAME
+    ```git switch BRANCH_NAME```
 
     if you have something not committed on the current branch, git won't let you to switch to another branch. Only if you have committed it, you are allowed to switch branch. and this may help you to understand that the branch operations are taken place in local repo (and results in your workspace change).
 
@@ -264,11 +265,11 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
     merge current branch with another branch by:
 
-        git merge ANOTHER_BRANCH
+    ```git merge ANOTHER_BRANCH```
 
     this command will merge and commit. if you do not want to commit, use this command:
 
-        git merge ANOTHER_BRANCH --no-commit
+    ```git merge ANOTHER_BRANCH --no-commit```
 
     as a result, it is "added" but no committed yet, i.e., the index is added to the staging (index) area.
 
@@ -282,7 +283,7 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
     3.4. rebase (???)
 
-        git rebase UPSTREAM_BRANCH
+    ```git rebase UPSTREAM_BRANCH```
 
      Reverts all commits since the current branch diverged from UPSTREAM_BRANCH, and then re-applies them one-by-one on top of changes from the HEAD of UPSTREAM_BRANCH.
 
@@ -290,7 +291,7 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
     3.5. cherry-pick a commit
 
-        git cherry-pick COMMIT
+    ```git cherry-pick COMMIT```
     
     Integrate changes in the given COMMIT (from another branch) into the current branch. (you should first use "git log" to find out the commit id on "another branch".) (and you need to make sure your working tree is clean -- if you just added a file to the index, you need to commit it before you can cherry-pick.)
 
@@ -315,11 +316,34 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
     3.6. revert a commit
 
-        git revert COMMIT
+    ```git revert COMMIT```
 
     Reverse commit specified by COMMIT and commit the result. i.e., withdraw a commit and commit on the withdrawal. But the name "revert" is better than withdraw, because it is technically the reverse of the target commit. and, if you revert twice, you will get the same as "no revert taken", which is better described by "revert".
     
     NOTE: This changes your workspace (you withdrew the commit, then the workspace restores to the stage when you last committed), so it requires your working tree to be clean (no modifications from the HEAD commit).
+
+    NOTE2: this is useful when you are not allowed to force push -- then this is the only way to make the remote go back to previous commits; why it needs force push: in that way, you may hard reset the HEAD to a previous commit and want to push it to remote, and the remote will decline this push, because your HEAD is not at the latest, that's why you will need forch push.
+
+    NOTE3: if you want to go back to multiple commits ago, a recommended way is to use "--no-commit" flag,
+
+    ```git revert --no-commit <commit-hash>```
+
+    it does not commit to the revert immediately; instead, it applies the changes necessary to revert the named commit to your working tree and the index, and you should commit the revert manually.
+
+    ```git revert <newest-commit-hash>^..<oldest-commit-hash>```
+
+    3.7 restore single file to previous commit version
+
+    Assuming the hash of the commit you want is c5f567:
+
+    ```git checkout c5f567 -- file1/to/restore file2/to/restore```
+
+    The git checkout man page gives more information.
+
+    If you want to revert to the commit before c5f567, append ~1 (where 1 is the number of commits you want to go back, it can be anything):
+
+    ```git checkout c5f567~1 -- file1/to/restore file2/to/restore```
+
 
 4. operations from index to local repo and to workspace
 
@@ -331,7 +355,7 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
     4.2. status
 
-        git status
+    ```git status```
     
    Displays: 
 
@@ -343,9 +367,9 @@ https://ndpsoftware.com/git-cheatsheet.html#loc=remote_repo
 
     4.3. checkout file(s) or directory
 
-        git checkout FILE(S)_OR_DIR
+    ```git checkout FILE(S)_OR_DIR```
 
-        取回兩個版本之前的檔案 git checkout HEAD~2 FILE_NAME
+    取回兩個版本之前的檔案 ```git checkout HEAD~2 FILE_NAME```
     
     this is to abandon the modifications in your workspace and replace the file or directory with the version you added or committed last time.
 
